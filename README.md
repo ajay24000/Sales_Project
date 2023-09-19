@@ -1,4 +1,4 @@
 # sales_project
 First project
 <br>
-By - Ajay Kumar
+By - Ajay Kumar (Clarivate)
