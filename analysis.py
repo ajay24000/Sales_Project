@@ -9,11 +9,11 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 from collections import Counter
 
+"""Web scrapping and Automation"""
+
+
 path = "C:/driver/chromedriver-win64/chromedriver/chromedriver.exe"
-
-
 service = Service(executable_path=path)
-
 driver = webdriver.Chrome(service=service)
 
 try:
@@ -31,8 +31,8 @@ try:
     git_search = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'query-builder-test')))
     
     git_search.send_keys('Pandas-Data-Science-Tasks')
-
     time.sleep(1)
+    
     git_search.submit()
 
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, 'KeithGalli'))).click()
@@ -44,11 +44,8 @@ try:
     driver.find_element(by='xpath',value='//*[@id="folder-row-2"]/td[2]/div/div/h3/div/a').click()
     time.sleep(2)
 
- 
 
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
- 
 
     for month in months:
 
@@ -64,7 +61,9 @@ except Exception as e:
 
 driver.quit()
 
+
 """Merging the Each months data"""
+
 
 path="C:/Users/U6074525/OneDrive - Clarivate Analytics/Desktop/project_september/sales_project/download/"
 
@@ -83,6 +82,7 @@ print(all_data.head())
 
 """Cleaning The Data"""
 
+
 nan_df = all_data[all_data.isna().any(axis=1)]
 print(nan_df.head())
 
@@ -94,24 +94,22 @@ all_data = all_data[all_data['Order Date'].str[0:2]!='Or']
  
 """Correcting the column """
 
+
 all_data['Quantity Ordered'] = pd.to_numeric(all_data['Quantity Ordered'])
 all_data['Price Each'] = pd.to_numeric(all_data['Price Each'])
 
- 
-"""Adding the months Column"""
+
+# Adding the months Column
 
 all_data['Month'] = all_data['Order Date'].str[0:2]
 all_data['Month'] = all_data['Month'].astype('int32')
-
 print(all_data.head())
 
-
 all_data['Month 2'] = pd.to_datetime(all_data['Order Date']).dt.month
-
 print(all_data.head())
  
 
-"""Adding the City Column"""
+# Adding the City Column
 
  
 def get_city(address):
@@ -120,13 +118,12 @@ def get_city(address):
 def get_state(address):
     return address.split(",")[2].split(" ")[1]
 
- 
 all_data['City'] = all_data['Purchase Address'].apply(lambda x: f"{get_city(x)}  ({get_state(x)})")
-
 print(all_data.head())
 
 
 """Sorting the Data"""
+
 
 all_data.sort_values(["Order Date"],axis=0,ascending=[False],inplace=True)
 
@@ -135,14 +132,14 @@ all_data.sort_values(["Product", "Order Date", "Month"],axis=0,ascending=[True, 
 print(all_data.head())
 
 
-"""Finding the best Month"""
+""" 1. Finding the best Month"""
+
 
 all_data['Sales'] = all_data['Quantity Ordered'].astype('int') * all_data['Price Each'].astype('float')
 
 print(all_data.groupby(['Month']).sum())
  
-
-"""Bar Graph"""
+# Bar Graph
 
 months = range(1,13)
 print(months)
@@ -158,13 +155,12 @@ plt.xlabel('Month number')
 plt.show()
 
  
-"""What city sold the most product"""
+""" 2. Which city sold the most product"""
 
 res=all_data.groupby(['City']).sum()
 print(res)
 
-
-"""Plotting"""
+# Plotting
  
 max_sales_city = res['Sales'].idxmax()
 max_sales_value = res['Sales'].max()
@@ -175,9 +171,7 @@ sales = res['Sales']
 
 sales_data = pd.DataFrame({'City': cities, 'Sales': sales})
 
-# Save the sales data to a CSV file
 sales_data.to_csv('sales_by_city.csv', index=False)
-
 print(sales)
 
 plt.bar(cities,sales)
@@ -188,11 +182,13 @@ plt.show()
 
 print(f"Most products are sold in: {max_sales_city} \nSales is: {max_sales_value}")
 
-"""Best Time to Display Advertisement"""
 
-all_data['Order Date']=pd.to_datetime(all_data['Order Date'])
-all_data['Hour']=all_data['Order Date'].dt.hour
-all_data['Minute']=all_data['Order Date'].dt.minute
+""" 3. Best Time to Display Advertisement"""
+
+
+all_data['Order Date'] = pd.to_datetime(all_data['Order Date'])
+all_data['Hour'] = all_data['Order Date'].dt.hour
+all_data['Minute'] = all_data['Order Date'].dt.minute
 all_data['Hour'] = pd.to_datetime(all_data['Order Date']).dt.hour
 all_data['Minute'] = pd.to_datetime(all_data['Order Date']).dt.minute
 
@@ -200,7 +196,7 @@ all_data['Minute'] = pd.to_datetime(all_data['Order Date']).dt.minute
 all_data['Count'] = 1
 print(all_data.head())
 
-hours=[hour for hour, df in all_data.groupby('Hour')]
+hours = [hour for hour, df in all_data.groupby('Hour')]
 
 hourly_counts = all_data.groupby('Hour')['Count'].count().reset_index()
 
@@ -214,24 +210,23 @@ plt.ylabel('Number of Orders')
 plt.grid()
 plt.show()
 
-"""products that are sold most often"""
+
+""" 4. products that are sold most often"""
 
 
-df=all_data[all_data['Order ID'].duplicated(keep=False)]
-df['Grouped']=df.groupby('Order ID')['Product'].transform(lambda x:','.join(x))
-df=df[['Order ID','Grouped']].drop_duplicates()
+df = all_data[all_data['Order ID'].duplicated(keep=False)]
+df['Grouped'] = df.groupby('Order ID')['Product'].transform(lambda x:','.join(x))
+df = df[['Order ID','Grouped']].drop_duplicates()
 
-count=Counter()
+count = Counter()
 
 for row in df['Grouped']:
-    row_list=row.split(',')
+    row_list = row.split(',')
     count.update(Counter(combinations(row_list,2)))
 
 for key,value in count.most_common(10):
     print(key,value)
 
-
-"""what product sold the most"""
 
 product_group = all_data.groupby('Product')
 quantity_ordered = product_group['Quantity Ordered'].sum()
@@ -244,13 +239,14 @@ plt.xlabel('Product')
 plt.xticks(products,rotation='vertical',size=8)
 plt.show()
 
+
+""" 5. what product sold the most"""
+
+
 product_quantity_data = pd.DataFrame({'Product': products, 'Quantity Ordered': quantity_ordered, 'Price': prices})
 
-# Save the product-wise quantity ordered data to a CSV file
 product_quantity_data.to_csv('product_quantity_ordered.csv', index=False)
 
-
-# print(prices)
 
 fig,ax1 = plt.subplots()
 ax2=ax1.twinx()
@@ -262,6 +258,3 @@ ax2.set_ylabel('Price($)',color='b')
 ax1.set_xticklabels(products,rotation='vertical',size=8)
 
 plt.show()
-
-
-
