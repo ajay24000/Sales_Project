@@ -147,6 +147,10 @@ print(all_data.groupby(['Month']).sum())
 months = range(1,13)
 print(months)
 
+monthly_sales = all_data.groupby('Month')['Sales'].sum().reset_index()
+
+monthly_sales.to_csv('monthly_sales.csv', index=False)
+
 plt.bar(months,all_data.groupby(['Month']).sum()['Sales'])
 plt.xticks(months)
 plt.ylabel('Sales in USD ($)')
@@ -168,6 +172,12 @@ max_sales_value = res['Sales'].max()
 
 cities=res.index
 sales = res['Sales']
+
+sales_data = pd.DataFrame({'City': cities, 'Sales': sales})
+
+# Save the sales data to a CSV file
+sales_data.to_csv('sales_by_city.csv', index=False)
+
 print(sales)
 
 plt.bar(cities,sales)
@@ -191,6 +201,11 @@ all_data['Count'] = 1
 print(all_data.head())
 
 hours=[hour for hour, df in all_data.groupby('Hour')]
+
+hourly_counts = all_data.groupby('Hour')['Count'].count().reset_index()
+
+# Save the hourly counts to a CSV file
+hourly_counts.to_csv('hourly_counts.csv', index=False)
 
 plt.plot(hours, all_data.groupby(['Hour']).count())
 plt.xticks(hours)
@@ -221,8 +236,7 @@ for key,value in count.most_common(10):
 product_group = all_data.groupby('Product')
 quantity_ordered = product_group['Quantity Ordered'].sum()
 products = [product for product,df in product_group]
-
-
+prices = product_group['Price Each'].mean()
 
 plt.bar(products,quantity_ordered)
 plt.ylabel('Quantity Ordered')
@@ -230,10 +244,13 @@ plt.xlabel('Product')
 plt.xticks(products,rotation='vertical',size=8)
 plt.show()
 
- 
+product_quantity_data = pd.DataFrame({'Product': products, 'Quantity Ordered': quantity_ordered, 'Price': prices})
 
-prices = product_group['Price Each'].mean()
-print(prices)
+# Save the product-wise quantity ordered data to a CSV file
+product_quantity_data.to_csv('product_quantity_ordered.csv', index=False)
+
+
+# print(prices)
 
 fig,ax1 = plt.subplots()
 ax2=ax1.twinx()
