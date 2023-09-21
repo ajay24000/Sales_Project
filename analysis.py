@@ -162,14 +162,21 @@ print(res)
 
 """Plotting"""
  
-cities=all_data['City'].unique()
+max_sales_city = res['Sales'].idxmax()
+max_sales_value = res['Sales'].max()
 
-plt.bar(cities,res['Sales'])
-plt.xticks(cities,rotation='vertical',size=8)
+
+cities=res.index
+sales = res['Sales']
+print(sales)
+
+plt.bar(cities,sales)
+plt.xticks(cities,rotation = 'vertical', size=8)
 plt.ylabel('Sales in USD ($)')
-plt.xlabel('Month number')
+plt.xlabel('City Name')
 plt.show()
 
+print(f"Most products are sold in: {max_sales_city} \nSales is: {max_sales_value}")
 
 """Best Time to Display Advertisement"""
 
