@@ -211,7 +211,7 @@ plt.grid()
 plt.show()
 
 
-""" 4. products that are sold most often"""
+""" 4. products that are most often sold together"""
 
 
 df = all_data[all_data['Order ID'].duplicated(keep=False)]
