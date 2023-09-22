@@ -228,6 +228,9 @@ for key,value in count.most_common(10):
     print(key,value)
 
 
+""" 5. what product sold the most"""
+
+
 product_group = all_data.groupby('Product')
 quantity_ordered = product_group['Quantity Ordered'].sum()
 products = [product for product,df in product_group]
@@ -238,9 +241,6 @@ plt.ylabel('Quantity Ordered')
 plt.xlabel('Product')
 plt.xticks(products,rotation='vertical',size=8)
 plt.show()
-
-
-""" 5. what product sold the most"""
 
 
 product_quantity_data = pd.DataFrame({'Product': products, 'Quantity Ordered': quantity_ordered, 'Price': prices})
